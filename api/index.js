@@ -49,6 +49,35 @@ app.get("/api", (req, res) => {
 // });
 
 
+// app.get("/api/filee", (req, res) => {
+//     const {
+//         query: { title, filename },
+//     } = req;
+
+//     const doc = new PDFDocument();
+
+//     // Path to the main-folder
+//     const mainFolderPath = path.join(__dirname, '..');
+//     const tmpDir = path.join(mainFolderPath, 'tmp');
+//     if (!fs.existsSync(tmpDir)) {
+//         fs.mkdirSync(tmpDir);
+//     }
+
+//     // Use the tmp folder in the main-folder to create the write stream for the pdf
+//     let writeStream = fs.createWriteStream(path.join(tmpDir, `${filename}.pdf`));
+//     doc.pipe(writeStream);
+//     doc.text(title);
+//     doc.end();
+
+//     writeStream.on("finish", function () {
+//         res.json({
+//             status: 200,
+//             message: "File created successfully!",
+//             path: tmpDir
+//         });
+//     });
+// });
+
 app.get("/api/filee", (req, res) => {
     const {
         query: { title, filename },
@@ -56,14 +85,10 @@ app.get("/api/filee", (req, res) => {
 
     const doc = new PDFDocument();
 
-    // Path to the main-folder
-    const mainFolderPath = path.join(__dirname, '..');
-    const tmpDir = path.join(mainFolderPath, 'tmp');
-    if (!fs.existsSync(tmpDir)) {
-        fs.mkdirSync(tmpDir);
-    }
-
-    // Use the tmp folder in the main-folder to create the write stream for the pdf
+    // Use the /tmp directory provided by Vercel
+    const tmpDir = '/tmp';
+    
+    // Create the write stream for the pdf in the /tmp directory
     let writeStream = fs.createWriteStream(path.join(tmpDir, `${filename}.pdf`));
     doc.pipe(writeStream);
     doc.text(title);
@@ -73,7 +98,6 @@ app.get("/api/filee", (req, res) => {
         res.json({
             status: 200,
             message: "File created successfully!",
-            path: tmpDir
         });
     });
 });
