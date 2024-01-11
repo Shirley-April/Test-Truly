@@ -9,6 +9,13 @@ app.get("/file", (req, res) => {
     })
 })
 
+app.get("/api", (req, res) => {
+    res.json({
+        status: 200, 
+        message: "Testing /api "
+    })
+})
+
 const PORT = 3005
 
 app.listen(PORT, () => {console.log("App running on port ", PORT)})
