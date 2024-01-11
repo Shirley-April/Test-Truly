@@ -3,6 +3,8 @@ const express = require("express");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 
+const path = require("path");
+
 const app = express();
 
 app.get("/file", (req, res) => {
@@ -19,6 +21,34 @@ app.get("/api", (req, res) => {
   });
 });
 
+// app.get("/api/filee", (req, res) => {
+//   const {
+//     query: { title, filename },
+//   } = req;
+
+//   const doc = new PDFDocument();
+
+//   const tmpDir = "/tmp";
+//   if (!fs.existsSync(tmpDir)) {
+//     fs.mkdirSync(tmpDir);
+//   }
+
+
+//   //use the tmp serverless function folder to create the write stream for the pdf
+//   let writeStream = fs.createWriteStream(path.join("/tmp", `${filename}.pdf`));
+//   doc.pipe(writeStream);
+//   doc.text(title);
+//   doc.end();
+
+//   writeStream.on("finish", function () {
+//     res.json({
+//       status: 200,
+//       message: "File created sucessfuly!",
+//     });
+//   });
+// });
+
+
 app.get("/api/filee", (req, res) => {
     const {
         query: { title, filename },
@@ -26,18 +56,26 @@ app.get("/api/filee", (req, res) => {
 
     const doc = new PDFDocument();
 
-    //use the tmp serverless function folder to create the write stream for the pdf
-    let writeStream = fs.createWriteStream(`/tmp/${filename}.pdf`);
+    // Path to the main-folder
+    const mainFolderPath = path.join(__dirname, '..');
+    const tmpDir = path.join(mainFolderPath, 'tmp');
+    if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir);
+    }
+
+    // Use the tmp folder in the main-folder to create the write stream for the pdf
+    let writeStream = fs.createWriteStream(path.join(tmpDir, `${filename}.pdf`));
     doc.pipe(writeStream);
     doc.text(title);
     doc.end();
 
-    writeStream.on('finish', function() {
+    writeStream.on("finish", function () {
         res.json({
             status: 200,
-            message: "File created sucessfuly!"
-        })
-    })
+            message: "File created successfully!",
+            path: tmpDir
+        });
+    });
 });
 
 const PORT = 3005;
